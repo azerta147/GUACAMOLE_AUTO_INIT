@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+
+  guacd:
+    image: guacamole/guacd:1.6.0
+    container_name: guacd
+    restart: unless-stopped
+    networks:
+      - guacnet
+
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: guacamole-db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+    volumes:
+      - guacamole_db:/var/lib/postgresql/data
+      - ./initdb/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
+
+    networks:
+      - guacnet
+
+
+  guacamole:
+    image: guacamole/guacamole:1.6.0
+    container_name: guacamole
+    restart: unless-stopped
+
+    depends_on:
+      - guacd
+      - postgres
+
+    ports:
+      - "8080:8080"
+
+    environment:
+
+      GUACD_HOSTNAME: guacd
+
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_PORT: 5432
+      POSTGRESQL_DATABASE: ${POSTGRES_DB}
+      POSTGRESQL_USER: ${POSTGRES_USER}
+      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD}
+
+    networks:
+      guacnet:
+
+      ipvlan_net:
+        ipv4_address: ${GUACAMOLE_IP}
+
+
+volumes:
+
+  guacamole_db:
+
+
+networks:
+
+  guacnet:
+    driver: bridge
+
+
+  ipvlan_net:
+    external: true
