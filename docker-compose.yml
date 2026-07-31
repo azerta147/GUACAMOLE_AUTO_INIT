@@ -27,11 +27,22 @@ services:
       - guacnet
 
 
-  guacamole-init:
-    image: guacamole/guacamole:1.6.0
+    guacamole-init:
+    image: postgres:16-alpine
     container_name: guacamole-init
     depends_on:
       - postgres
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./initdb:/initdb:ro
+    entrypoint: >
+      sh -c "
+      sleep 10 &&
+      psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /initdb/initdb.sql
+      "
+    networks:
+      - guacnet
 
     environment:
       POSTGRESQL_HOSTNAME: postgres
