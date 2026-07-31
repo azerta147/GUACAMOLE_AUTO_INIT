@@ -27,40 +27,30 @@ services:
       - guacnet
 
 
-    guacamole-init:
+  guacamole-init:
     image: postgres:16-alpine
     container_name: guacamole-init
+
     depends_on:
       - postgres
+
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
+
     volumes:
       - ./initdb:/initdb:ro
-    entrypoint: >
-      sh -c "
-      sleep 10 &&
-      psql -h postgres -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /initdb/initdb.sql
-      "
-    networks:
-      - guacnet
-
-    environment:
-      POSTGRESQL_HOSTNAME: postgres
-      POSTGRESQL_PORT: 5432
-      POSTGRESQL_DATABASE: ${POSTGRES_DB}
-      POSTGRESQL_USER: ${POSTGRES_USER}
-      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD}
 
     entrypoint: >
       sh -c "
+      echo 'Waiting for PostgreSQL...' &&
       sleep 10 &&
-      /opt/guacamole/bin/initdb.sh --postgresql > /tmp/initdb.sql &&
-      PGPASSWORD=${POSTGRES_PASSWORD}
+      echo 'Importing Guacamole database...' &&
       psql
       -h postgres
       -U ${POSTGRES_USER}
       -d ${POSTGRES_DB}
-      -f /tmp/initdb.sql
+      -f /initdb/initdb.sql &&
+      echo 'Database initialized'
       "
 
     networks:
@@ -98,11 +88,9 @@ services:
         ipv4_address: ${GUACAMOLE_IP}
 
 
-
 volumes:
 
   guacamole_db:
-
 
 
 networks:
