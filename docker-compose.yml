@@ -11,9 +11,9 @@ services:
 
 
   postgres:
-  image: postgres:16-alpine
-  container_name: guacamole-db
-  restart: unless-stopped
+    image: postgres:16-alpine
+    container_name: guacamole-db
+    restart: unless-stopped
 
   environment:
     POSTGRES_DB: guacamole_db
@@ -27,7 +27,7 @@ services:
     configs:
       - source: guacamole_init
         target: /docker-entrypoint-initdb.d/initdb.sql
-
+        
     networks:
       - guacnet
 
