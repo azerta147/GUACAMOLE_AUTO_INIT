@@ -6,6 +6,7 @@ services:
     image: guacamole/guacd:1.6.0
     container_name: guacd
     restart: unless-stopped
+
     networks:
       - guacnet
 
@@ -15,19 +16,15 @@ services:
     container_name: guacamole-db
     restart: unless-stopped
 
-  environment:
-    POSTGRES_DB: guacamole_db
-    POSTGRES_USER: guacamole
-    POSTGRES_PASSWORD: guacdb
+    environment:
+      POSTGRES_DB: guacamole_db
+      POSTGRES_USER: guacamole
+      POSTGRES_PASSWORD: guacdb
 
-  volumes:
-    - guacamole_db:/var/lib/postgresql/data
-    - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+    volumes:
+      - guacamole_db:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
 
-    configs:
-      - source: guacamole_init
-        target: /docker-entrypoint-initdb.d/initdb.sql
-        
     networks:
       - guacnet
 
@@ -38,8 +35,8 @@ services:
     restart: unless-stopped
 
     depends_on:
-      - postgres
       - guacd
+      - postgres
 
     ports:
       - "8080:8080"
@@ -49,6 +46,7 @@ services:
       GUACD_HOSTNAME: guacd
 
       POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_PORT: 5432
       POSTGRESQL_DATABASE: guacamole_db
       POSTGRESQL_USER: guacamole
       POSTGRESQL_PASSWORD: guacdb
@@ -66,16 +64,11 @@ volumes:
   guacamole_db:
 
 
-configs:
-
-  guacamole_init:
-    file: ./initdb/initdb.sql
-
-
 networks:
 
   guacnet:
     driver: bridge
+
 
   ipvlan_net:
     external: true
