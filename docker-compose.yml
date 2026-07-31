@@ -22,7 +22,7 @@ services:
 
     volumes:
       - guacamole_db:/var/lib/postgresql/data
-      - ./initdb/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql:ro
+      - ./initdb:/docker-entrypoint-initdb.d:ro
 
     networks:
       - guacnet
