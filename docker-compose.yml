@@ -14,19 +14,20 @@ services:
   postgres:
     build:
       context: ./postgres-init
+
     container_name: guacamole-db
     restart: unless-stopped
 
-  environment:
-    POSTGRES_DB: guacamole_db
-    POSTGRES_USER: guacamole
-    POSTGRES_PASSWORD: guacdb
+    environment:
+      POSTGRES_DB: guacamole_db
+      POSTGRES_USER: guacamole
+      POSTGRES_PASSWORD: guacdb
 
-  volumes:
-    - guacamole_db:/var/lib/postgresql/data
+    volumes:
+      - guacamole_db:/var/lib/postgresql/data
 
-  networks:
-    - guacnet
+    networks:
+      - guacnet
 
 
   guacamole:
