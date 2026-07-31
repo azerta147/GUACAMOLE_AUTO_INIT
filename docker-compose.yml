@@ -12,21 +12,21 @@ services:
 
 
   postgres:
-    image: postgres:16-alpine
+    build:
+      context: ./postgres-init
     container_name: guacamole-db
     restart: unless-stopped
 
-    environment:
-      POSTGRES_DB: guacamole_db
-      POSTGRES_USER: guacamole
-      POSTGRES_PASSWORD: guacdb
+  environment:
+    POSTGRES_DB: guacamole_db
+    POSTGRES_USER: guacamole
+    POSTGRES_PASSWORD: guacdb
 
-    volumes:
-      - guacamole_db:/var/lib/postgresql/data
-      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+  volumes:
+    - guacamole_db:/var/lib/postgresql/data
 
-    networks:
-      - guacnet
+  networks:
+    - guacnet
 
 
   guacamole:
